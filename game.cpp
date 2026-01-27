@@ -15,6 +15,7 @@ void Game::init() {
 
 void Game::start_new_run() {
     player = Player();
+    frame = 0;
 }
 
 void Game::handle_input() {
@@ -52,6 +53,17 @@ void Game::draw_player() {
 void Game::render() {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
+
+    int grid_size_x = 105;
+    int grid_size_y = 85;
+    int offset_x = static_cast<int>(player.pos.x) % grid_size_x;
+    int offset_y = static_cast<int>(player.pos.y) % grid_size_y;
+
+    SDL_SetRenderDrawColor(renderer, 0, 100, 160, 40);
+    for (int i = -15; i < 20; ++i) {
+        int sx = i * grid_size_x - offset_x + (frame % grid_size_y);
+        thick_line(renderer, sx, 0, sx, WINDOW_H, 3);
+    }
 
     draw_player();
 

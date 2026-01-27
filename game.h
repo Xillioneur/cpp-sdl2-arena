@@ -10,6 +10,7 @@ public:
     SDL_Window* window = nullptr;
     SDL_Renderer* renderer = nullptr;
     Player player;
+    int frame = 0;
 
     void init();
     void start_new_run();
