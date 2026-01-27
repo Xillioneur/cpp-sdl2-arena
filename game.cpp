@@ -10,6 +10,11 @@ void Game::init() {
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     std::srand(static_cast<unsigned>(std::time(nullptr)));
     SDL_ShowCursor(SDL_ENABLE);
+    start_new_run();
+}
+
+void Game::start_new_run() {
+    player = Player();
 }
 
 void Game::handle_input() {
@@ -17,16 +22,41 @@ void Game::handle_input() {
     while (SDL_PollEvent(&ev)) {
         if (ev.type == SDL_QUIT) exit(0);
     }
+
+    const Uint8* keys = SDL_GetKeyboardState(NULL);
+    Vector2 move(0, 0);
+    if (keys[SDL_SCANCODE_W] || keys[SDL_SCANCODE_UP]) move.y -= 1;
+    if (keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_DOWN]) move.y += 1;
+    if (keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT]) move.x -= 1;
+    if (keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT]) move.x += 1;
+    
+    // TODO: Add roll_timer
+    if (move.magnitude() > 0) {
+        move = move.normalized() * PLAYER_SPEED;
+        player.pos = player.pos + move;
+    }
 }
 
 void Game::update() {
     handle_input();
 }
 
+void Game::draw_player() {
+    float cx = WINDOW_W / 2.0f;
+    float cy = WINDOW_H / 2.0f;
+
+    SDL_SetRenderDrawColor(renderer, 0, 240, 255, 160);
+    outline_circle(renderer, static_cast<int>(cx), static_cast<int>(cy), PLAYER_SIZE + 25, 0, 240, 255, 160);
+}
+
 void Game::render() {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
+
+    draw_player();
+
     SDL_RenderPresent(renderer);
+
 }
 
 void Game::run() {
