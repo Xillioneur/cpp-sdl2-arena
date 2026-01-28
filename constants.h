@@ -9,6 +9,7 @@
 #define PI 3.14159265f
 #define PLAYER_SIZE 40
 #define PLAYER_SPEED 5.5f
+#define SWORD_LENGTH 150.0f
 
 struct Vector2 {
     float x, y;

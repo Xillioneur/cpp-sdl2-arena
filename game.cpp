@@ -42,6 +42,15 @@ void Game::update() {
     handle_input();
 }
 
+void Game::draw_sword(float hilt_x, float hilt_y, float sword_angle) {
+    Vector2 tip(hilt_x + cos(sword_angle) * SWORD_LENGTH, hilt_y + sin(sword_angle) * SWORD_LENGTH);    
+
+    // TODO: Glow
+    SDL_SetRenderDrawColor(renderer, 120, 255, 255, 255);
+    thick_line(renderer, static_cast<int>(hilt_x), static_cast<int>(hilt_y),
+                static_cast<int>(tip.x), static_cast<int>(tip.y), 20);
+}
+
 void Game::draw_player() {
     float cx = WINDOW_W / 2.0f;
     float cy = WINDOW_H / 2.0f;
@@ -51,6 +60,11 @@ void Game::draw_player() {
 
     SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
     outline_circle(renderer, static_cast<int>(cx), static_cast<int>(cy), PLAYER_SIZE, 0, 255, 255, 255);
+
+    Vector2 hilt_base(cx + cos(player.lagged_aim_angle) * PLAYER_SIZE * 0.8f, cy + sin(player.lagged_aim_angle) * PLAYER_SIZE * 0.7f);
+    float sword_angle = player.lagged_aim_angle + player.sword_relative_angle;
+
+    draw_sword(hilt_base.x, hilt_base.y, sword_angle);
 }
 
 void Game::render() {

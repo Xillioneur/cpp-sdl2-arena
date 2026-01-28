@@ -16,6 +16,7 @@ public:
     void start_new_run();
     void handle_input();
     void update();
+    void draw_sword(float hilt_x, float hilt_y, float sword_angle);
     void draw_player();
     void render();
     void run();
