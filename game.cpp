@@ -48,6 +48,9 @@ void Game::draw_player() {
 
     SDL_SetRenderDrawColor(renderer, 0, 240, 255, 160);
     outline_circle(renderer, static_cast<int>(cx), static_cast<int>(cy), PLAYER_SIZE + 25, 0, 240, 255, 160);
+
+    SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
+    outline_circle(renderer, static_cast<int>(cx), static_cast<int>(cy), PLAYER_SIZE, 0, 255, 255, 255);
 }
 
 void Game::render() {
