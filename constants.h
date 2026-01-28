@@ -24,4 +24,6 @@ struct Vector2 {
     float dot(const Vector2& o) const { return x * o.x + y * o.y; }
 };
 
+enum class SwordState { Rest, Charging, Windup, Swing, Recovery };
+
 #endif
