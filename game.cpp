@@ -64,6 +64,10 @@ void Game::render() {
         int sx = i * grid_size_x - offset_x + (frame % grid_size_y);
         thick_line(renderer, sx, 0, sx, WINDOW_H, 3);
     }
+    for (int i = -15; i < 20; ++i) {
+        int sy = i * grid_size_y - offset_y + (frame % grid_size_y);
+        thick_line(renderer, 0, sy, WINDOW_W, sy, 3);
+    }
 
     draw_player();
 
