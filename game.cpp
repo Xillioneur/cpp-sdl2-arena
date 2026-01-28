@@ -40,6 +40,16 @@ void Game::handle_input() {
 
 void Game::update() {
     handle_input();
+
+    int mx, my;
+    SDL_GetMouseState(&mx, &my);
+    float target_aim = atan2(my - WINDOW_H / 2.0f, mx - WINDOW_W / 2.0f);
+
+    float follow_speed = 0.28f;
+    // TODO: Sword state
+
+    float diff = atan2(sin(target_aim - player.lagged_aim_angle), cos(target_aim - player.lagged_aim_angle));
+    player.lagged_aim_angle += diff * follow_speed;
 }
 
 void Game::draw_sword(float hilt_x, float hilt_y, float sword_angle) {
@@ -49,6 +59,8 @@ void Game::draw_sword(float hilt_x, float hilt_y, float sword_angle) {
     SDL_SetRenderDrawColor(renderer, 120, 255, 255, 255);
     thick_line(renderer, static_cast<int>(hilt_x), static_cast<int>(hilt_y),
                 static_cast<int>(tip.x), static_cast<int>(tip.y), 20);
+
+    // TODO: Finish sword
 }
 
 void Game::draw_player() {
