@@ -43,6 +43,45 @@ void Game::handle_input() {
             move = move.normalized() * PLAYER_SPEED;
             player.pos = player.pos + move;
         }
+
+        if (left_pressed && player.stamina >= 28.0f &&
+            (player.sword_state == SwordState::Rest || player.sword_state == SwordState::Recovery)) {
+                player.sword_state = SwordState::Charging;
+        }
+
+        if (player.sword_state == SwordState::Charging && !left_down && was_left_down) {
+            bool heavy = player.charge_time >= 18.0f;
+            float cost = heavy ? 45.0f : 28.0f;
+            if (player.stamina >= cost) {
+                player.stamina -= cost;
+                player.is_heavy_attack = heavy;
+
+                if (!heavy && player.sword_timer > 0.0f) {
+                    player.combo_count = std::min(4, player.combo_count + 1);
+                } else {
+                    player.combo_count = 0;
+                }
+
+                float asf = player.attack_speed_factor;
+
+                float base_windup = heavy ? 28.0f : 10.0f;
+                float base_swing = heavy ? 18.0 : 10.0f;
+                float base_recovery = heavy ? 40.0f : 22.0f;
+
+                float combo_speed = heavy ? 1.0f : (1.0f - 0.18f * player.combo_count);
+
+                player.current_windup_time = base_windup * combo_speed * asf;
+                player.current_swing_time = base_swing * (heavy ? 1.0f : combo_speed * 1.1f) * asf;
+                player.current_recovery_time = base_recovery * combo_speed * asf;
+
+                // TODO: Mult
+
+                player.sword_state = SwordState::Windup;
+                player.sword_timer - player.current_windup_time;
+            } else {
+                player.sword_state = SwordState::Rest;
+            }
+        }
     }
 
     if ((title_screen || game_over) && left_pressed) {
@@ -55,6 +94,35 @@ void Game::handle_input() {
 
     was_left_down = left_down;
 }
+
+void Game::update_sword_animation() {
+    float rest_relative = -PI / 6.0f;
+
+    float base_back = player.is_heavy_attack ? PI / 1.8f : PI / 4.0f;
+    float back_bonus = 0.2f * PI * player.combo_count;
+    float max_back = base_back + back_bonus;
+
+    float base_arc = player.is_heavy_attack ? PI * 2.4f : PI * 1.6f;
+    float arc_bonus = 0.5f * PI * player.combo_count;
+    float swing_arc = base_arc + arc_bonus;
+
+    if (player.sword_state == SwordState::Charging) {
+        float t = std::min(1.0f, player.charge_time / 30.0f);
+        player.sword_relative_angle = rest_relative - t * max_back;
+    } else if (player.sword_state == SwordState::Windup) {
+        float t = (player.current_windup_time - player.sword_timer) / player.current_windup_time;
+        player.sword_relative_angle = rest_relative - t * max_back;
+    } else if (player.sword_state == SwordState::Swing) {
+        float t = (player.current_swing_time - player.sword_timer) / player.current_swing_time;
+        player.sword_relative_angle = rest_relative - max_back + t * swing_arc;
+    } else if (player.sword_state == SwordState::Recovery) {
+        float t = (player.current_recovery_time - player.sword_timer) / player.current_recovery_time;
+        player.sword_relative_angle = rest_relative - max_back + swing_arc - t * swing_arc;
+    } else {
+        player.sword_relative_angle = rest_relative;
+    }
+}
+
 
 void Game::update() {
     if (title_screen || game_over) {
@@ -70,9 +138,36 @@ void Game::update() {
     float target_aim = atan2(my - WINDOW_H / 2.0f, mx - WINDOW_W / 2.0f);
 
     float follow_speed = 0.28f;
+    if (player.sword_state == SwordState::Rest) follow_speed = 0.35f;
+    else if (player.sword_state == SwordState::Recovery) follow_speed = 0.22f;
+    else if (player.sword_state == SwordState::Charging) follow_speed = 0.40f;
+    else if (player.sword_state == SwordState::Windup) follow_speed = 0.18f;
+    else if (player.sword_state == SwordState::Swing) follow_speed = player.is_heavy_attack ? 0.12f : 0.20f - 0.02f * player.combo_count;
 
     float diff = atan2(sin(target_aim - player.lagged_aim_angle), cos(target_aim - player.lagged_aim_angle));
     player.lagged_aim_angle += diff * follow_speed;
+
+    player.stamina = std::min(player.max_stamina, player.stamina + player.stamina_regen / 60.0f);
+
+    if (player.sword_state == SwordState::Windup || player.sword_state == SwordState::Swing || player.sword_state == SwordState::Recovery) {
+        player.sword_timer -= 1.0f;
+        if (player.sword_timer <= 0.0f) {
+            if (player.sword_state == SwordState::Windup) {
+                player.sword_state = SwordState::Swing;
+                player.sword_timer = player.current_swing_time;
+            } else if (player.sword_state == SwordState::Swing) {
+                player.sword_state = SwordState::Recovery;
+                player.sword_timer = player.current_recovery_time;
+            } else if (player.sword_state == SwordState::Recovery) {
+                player.sword_state = SwordState::Rest;
+                player.is_heavy_attack = false;
+                player.combo_count = 0;
+            }
+        }
+    }
+
+    update_sword_animation();
+
 }
 
 void Game::draw_sword(float hilt_x, float hilt_y, float sword_angle) {
