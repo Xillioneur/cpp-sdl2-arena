@@ -24,21 +24,45 @@ void Game::handle_input() {
         if (ev.type == SDL_QUIT) exit(0);
     }
 
-    const Uint8* keys = SDL_GetKeyboardState(NULL);
-    Vector2 move(0, 0);
-    if (keys[SDL_SCANCODE_W] || keys[SDL_SCANCODE_UP]) move.y -= 1;
-    if (keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_DOWN]) move.y += 1;
-    if (keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT]) move.x -= 1;
-    if (keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT]) move.x += 1;
-    
-    // TODO: Add roll_timer
-    if (move.magnitude() > 0) {
-        move = move.normalized() * PLAYER_SPEED;
-        player.pos = player.pos + move;
+    int mx, my;
+    Uint32 mouse = SDL_GetMouseState(&mx, &my);
+    static bool was_left_down = false;
+    bool left_down = mouse & SDL_BUTTON(SDL_BUTTON_LEFT);
+    bool left_pressed = left_down && !was_left_down;
+
+    if (!title_screen && !game_over) { 
+        const Uint8* keys = SDL_GetKeyboardState(NULL);
+        Vector2 move(0, 0);
+        if (keys[SDL_SCANCODE_W] || keys[SDL_SCANCODE_UP]) move.y -= 1;
+        if (keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_DOWN]) move.y += 1;
+        if (keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT]) move.x -= 1;
+        if (keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT]) move.x += 1;
+        
+        // TODO: Add roll_timer
+        if (move.magnitude() > 0) {
+            move = move.normalized() * PLAYER_SPEED;
+            player.pos = player.pos + move;
+        }
     }
+
+    if ((title_screen || game_over) && left_pressed) {
+        if (title_screen) {
+            title_screen = false;
+        } else {
+            start_new_run();
+        }
+    }
+
+    was_left_down = left_down;
 }
 
 void Game::update() {
+    if (title_screen || game_over) {
+        handle_input();
+        frame++;
+        return;
+    }
+
     handle_input();
 
     int mx, my;
@@ -46,7 +70,6 @@ void Game::update() {
     float target_aim = atan2(my - WINDOW_H / 2.0f, mx - WINDOW_W / 2.0f);
 
     float follow_speed = 0.28f;
-    // TODO: Sword state
 
     float diff = atan2(sin(target_aim - player.lagged_aim_angle), cos(target_aim - player.lagged_aim_angle));
     player.lagged_aim_angle += diff * follow_speed;
