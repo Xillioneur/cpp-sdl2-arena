@@ -20,6 +20,7 @@ public:
     float current_windup_time = 0.0f;
     float current_swing_time = 0.0f;
     float current_recovery_time = 0.0f;
+    float current_lunge_speed = 0.0f;
 
     float attack_speed_factor = 1.0f;
 

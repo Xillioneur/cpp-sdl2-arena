@@ -75,6 +75,7 @@ void Game::handle_input() {
                 player.current_recovery_time = base_recovery * combo_speed * asf;
 
                 // TODO: Mult
+                player.current_lunge_speed = heavy ? 9.0f : 2.0f + 2.0f * player.combo_count;
 
                 player.sword_state = SwordState::Windup;
                 player.sword_timer - player.current_windup_time;
@@ -164,6 +165,12 @@ void Game::update() {
                 player.combo_count = 0;
             }
         }
+    }
+
+    if (player.sword_state == SwordState::Swing && player.current_lunge_speed > 0.0f) {
+        Vector2 dir(mx - WINDOW_W / 2.0f, my - WINDOW_H / 2.0f);
+        if (dir.magnitude() > 0.0f) dir = dir.normalized();
+        player.pos = player.pos + dir * player.current_lunge_speed;
     }
 
     update_sword_animation();
