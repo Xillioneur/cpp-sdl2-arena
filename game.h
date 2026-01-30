@@ -27,6 +27,7 @@ public:
     void update();
     void draw_sword(float hilt_x, float hilt_y, float sword_angle);
     void draw_spawn_indicator(const SpawnIndicator& ind);
+    void draw_enemy(const Enemy& e);
     void draw_player();
     void render();
     void run();

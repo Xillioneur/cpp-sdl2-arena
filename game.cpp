@@ -177,6 +177,16 @@ void Game::update() {
 
     update_sword_animation();
 
+    for (auto it = spawn_indicators.begin(); it != spawn_indicators.end(); ) {
+        it->timer -= 1.0f;
+        if (it->timer <= 0.0f) {
+            enemies.emplace_back(it->pos, it->type, 1);
+            it = spawn_indicators.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
     float difficulty = 1.0f + static_cast<float>(frame) / 18000.0f;
     spawn_timer -= 1.0f;
     if (spawn_timer <= 0.0f) {
@@ -213,6 +223,23 @@ void Game::draw_spawn_indicator(const SpawnIndicator& ind) {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     outline_circle(renderer, static_cast<int>(sx), static_cast<int>(sy), 300, 255, 255, 255, 255);
     outline_circle(renderer, static_cast<int>(sx), static_cast<int>(sy), static_cast<int>(300 * 0.7f), 255, 255, 255, 255);
+}
+
+void Game::draw_enemy(const Enemy& e) {
+    float cx = WINDOW_W / 2.0f - player.pos.x + e.pos.x;
+    float cy = WINDOW_H / 2.0f - player.pos.y + e.pos.y;
+
+    int radius = (e.type >= 4) ? 120 : 48 + e.type * 25;
+
+    Uint8 r = 255, g = 80, b = 180;
+    if (e.type >= 4) {
+        r = 255; g = 200; b = 50;
+    } else if (e.type == 1) { r=255; g=200; b=80; }
+    else if (e.type == 2) { r=180; g=255; b=100; }
+    else if (e.type == 3) { r=255; g=100; b=200; }
+
+    SDL_SetRenderDrawColor(renderer, r, g, b, 255);
+    outline_circle(renderer, static_cast<int>(cx), static_cast<int>(cy), radius, r, g, b);
 }
 
 void Game::draw_player() {
@@ -252,10 +279,11 @@ void Game::render() {
 
     for (const auto& ind : spawn_indicators) draw_spawn_indicator(ind);
 
+    for (const auto& e : enemies) draw_enemy(e);
+
     draw_player();
 
     SDL_RenderPresent(renderer);
-
 }
 
 void Game::run() {

@@ -10,6 +10,8 @@ public:
     int type = 0;
     float angle = 0.0f;
     bool active = true;
+
+    Enemy(Vector2 p, int t, int wave_equiv);
 };
 
 #endif
