@@ -2,7 +2,7 @@ CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -O2 `sdl2-config --cflags`
 LDFLAGS = `sdl2-config --libs`
 
-SOURCES = main.cpp game.cpp utils.cpp
+SOURCES = main.cpp game.cpp enemy.cpp utils.cpp
 EXEC = game
 
 all: $(EXEC)
