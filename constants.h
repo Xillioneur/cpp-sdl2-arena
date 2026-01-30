@@ -26,4 +26,10 @@ struct Vector2 {
 
 enum class SwordState { Rest, Charging, Windup, Swing, Recovery };
 
+struct SpawnIndicator {
+    Vector2 pos;
+    float timer = 90.0f;
+    int type = 0;
+};
+
 #endif

@@ -13,6 +13,7 @@ public:
     SDL_Renderer* renderer = nullptr;
     Player player;
     std::vector<Enemy> enemies;
+    std::vector<SpawnIndicator> spawn_indicators;
     bool game_over = false;
     bool title_screen = true;
     int frame = 0;
