@@ -18,12 +18,15 @@ public:
     bool title_screen = true;
     int frame = 0;
 
+    float spawn_timer = 300.0f;
+
     void init();
     void start_new_run();
     void handle_input();
     void update_sword_animation();
     void update();
     void draw_sword(float hilt_x, float hilt_y, float sword_angle);
+    void draw_spawn_indicator(const SpawnIndicator& ind);
     void draw_player();
     void render();
     void run();

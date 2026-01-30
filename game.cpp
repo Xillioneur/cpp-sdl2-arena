@@ -177,6 +177,22 @@ void Game::update() {
 
     update_sword_animation();
 
+    float difficulty = 1.0f + static_cast<float>(frame) / 18000.0f;
+    spawn_timer -= 1.0f;
+    if (spawn_timer <= 0.0f) {
+        int count = 3 + static_cast<int>(difficulty * 5.0f) + rand() % 3;
+        int max_t = std::min(3, 1 + static_cast<int>(difficulty));
+        for (int i = 0; i < count; ++i) {
+            float ang = static_cast<float>(rand() % 360) * PI / 180.0f;
+            float dist = 700.0f + static_cast<float>(rand() % 500);
+            Vector2 sp = player.pos + Vector2(cos(ang) * dist, sin(ang) * dist);
+            int t = rand() % (max_t + 1);
+            spawn_indicators.push_back({sp, 90.0f, t}); // TODO: Full spawn indicator code.
+        }
+        spawn_timer = 300.0f / difficulty;
+    }
+
+    frame++;
 }
 
 void Game::draw_sword(float hilt_x, float hilt_y, float sword_angle) {
@@ -188,6 +204,15 @@ void Game::draw_sword(float hilt_x, float hilt_y, float sword_angle) {
                 static_cast<int>(tip.x), static_cast<int>(tip.y), 20);
 
     // TODO: Finish sword
+}
+
+void Game::draw_spawn_indicator(const SpawnIndicator& ind) {
+    float sx = WINDOW_W / 2.0f - player.pos.x + ind.pos.x;
+    float sy = WINDOW_H / 2.0f - player.pos.y + ind.pos.y;
+
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    outline_circle(renderer, static_cast<int>(sx), static_cast<int>(sy), 300, 255, 255, 255, 255);
+    outline_circle(renderer, static_cast<int>(sx), static_cast<int>(sy), static_cast<int>(300 * 0.7f), 255, 255, 255, 255);
 }
 
 void Game::draw_player() {
@@ -224,6 +249,8 @@ void Game::render() {
         int sy = i * grid_size_y - offset_y + (frame % grid_size_y);
         thick_line(renderer, 0, sy, WINDOW_W, sy, 3);
     }
+
+    for (const auto& ind : spawn_indicators) draw_spawn_indicator(ind);
 
     draw_player();
 
