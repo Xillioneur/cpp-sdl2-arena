@@ -16,6 +16,7 @@ void Game::init() {
 void Game::start_new_run() {
     player = Player();
     frame = 0;
+    enemies.clear();
 }
 
 void Game::handle_input() {

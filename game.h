@@ -3,13 +3,16 @@
 
 #include "constants.h"
 #include "player.h"
+#include "enemy.h"
 #include "utils.h"
+#include <vector>
 
 class Game {
 public:
     SDL_Window* window = nullptr;
     SDL_Renderer* renderer = nullptr;
     Player player;
+    std::vector<Enemy> enemies;
     bool game_over = false;
     bool title_screen = true;
     int frame = 0;
