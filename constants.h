@@ -2,6 +2,7 @@
 #define CONSTANTS_H
 
 #include <SDL2/SDL.h>
+#include <vector>
 #include <cmath>
 
 #define WINDOW_W 1200
@@ -15,6 +16,7 @@ struct Vector2 {
     float x, y;
     Vector2(float px = 0, float py = 0) : x(px), y(py) {}
     Vector2 operator+(const Vector2& o) const { return Vector2(x + o.x, y + o.y); }
+    Vector2 operator-(const Vector2& o) const { return Vector2(x - o.x, y - o.y); }
     Vector2 operator*(float s) const { return Vector2(x * s, y * s); }
     float magnitude() const { return std::hypot(x, y); }
     Vector2 normalized() const {

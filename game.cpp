@@ -1,4 +1,5 @@
 #include "game.h"
+#include <ctime>
 #include <iostream>
 
 void Game::init() {
@@ -176,6 +177,8 @@ void Game::update() {
     }
 
     update_sword_animation();
+
+    for (auto& e : enemies) if (e.active) e.update(player.pos, frame);
 
     for (auto it = spawn_indicators.begin(); it != spawn_indicators.end(); ) {
         it->timer -= 1.0f;

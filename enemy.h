@@ -12,6 +12,7 @@ public:
     bool active = true;
 
     Enemy(Vector2 p, int t, int wave_equiv);
+    void update(const Vector2& player_pos, int frame);
 };
 
 #endif
