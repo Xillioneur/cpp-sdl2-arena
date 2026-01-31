@@ -24,6 +24,7 @@ public:
     void start_new_run();
     void handle_input();
     void update_sword_animation();
+    void perform_attack_sweep();
     void update();
     void draw_sword(float hilt_x, float hilt_y, float sword_angle);
     void draw_spawn_indicator(const SpawnIndicator& ind);

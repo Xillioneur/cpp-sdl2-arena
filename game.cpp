@@ -127,6 +127,25 @@ void Game::update_sword_animation() {
     }
 }
 
+void Game::perform_attack_sweep() {
+    float aim_angle = player.lagged_aim_angle;
+    float current_relative = player.sword_relative_angle;
+    
+    for (auto& e : enemies) {
+        if (!e.active) continue;
+
+        Vector2 to_e = e.pos - player.pos;
+        float dist = to_e.magnitude();
+        if (dist > SWORD_LENGTH + 100) continue;
+
+        float enemy_angle = atan2(to_e.y, to_e.x);
+        float angle_diff = std::abs(atan2(sin(aim_angle + current_relative - enemy_angle),
+                                         cos(aim_angle + current_relative - enemy_angle)));
+        if (angle_diff > player.current_max_angle_diff) continue;
+
+        e.health -= player.damage;
+    }
+}
 
 void Game::update() {
     if (title_screen || game_over) {
@@ -176,6 +195,10 @@ void Game::update() {
         player.pos = player.pos + dir * player.current_lunge_speed;
     }
 
+    if (player.sword_state == SwordState::Swing) {
+        perform_attack_sweep();
+    }
+
     update_sword_animation();
 
     for (auto& e : enemies) if (e.active) e.update(player.pos, frame);
@@ -205,6 +228,13 @@ void Game::update() {
         spawn_timer = 300.0f / difficulty;
     }
 
+    for (auto it = enemies.begin(); it != enemies.end(); ) {
+        if (it->health <= 0.0f) {
+            it = enemies.erase(it);
+        } else {
+            ++it;
+        }
+    }
     frame++;
 }
 

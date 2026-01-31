@@ -6,6 +6,8 @@
 class Enemy {
 public:
     Vector2 pos;
+    float health = 20.0f;
+    float max_health = 20.0f;
     float speed = 2.2f;
     int type = 0;
     float angle = 0.0f;

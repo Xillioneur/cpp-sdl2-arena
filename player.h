@@ -9,6 +9,7 @@ public:
     float stamina = 100.0f;
     float max_stamina = 100.0f;
     float stamina_regen = 30.0f;
+    int damage = 32;
 
     SwordState sword_state = SwordState::Rest;    
     float sword_timer = 0.0f;
@@ -21,6 +22,7 @@ public:
     float current_swing_time = 0.0f;
     float current_recovery_time = 0.0f;
     float current_lunge_speed = 0.0f;
+    float current_max_angle_diff = 1.5f;
 
     float attack_speed_factor = 1.0f;
 

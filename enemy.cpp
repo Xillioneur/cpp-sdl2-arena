@@ -1,6 +1,9 @@
 #include "enemy.h"
 
-Enemy::Enemy(Vector2 p, int t, int wave_equiv) : pos(p), type(t) {}
+Enemy::Enemy(Vector2 p, int t, int wave_equiv) : pos(p), type(t) {
+    float wave_scale = 1.0f + (wave_equiv - 1) * 0.15f;
+    health = max_health = (90.0f + t * 70.0f + static_cast<float>(rand() % 100)) * wave_scale;
+}
 
 void Enemy::update(const Vector2& player_pos, int frame) {
     Vector2 to_player = player_pos - pos;
