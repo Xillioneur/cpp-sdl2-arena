@@ -141,9 +141,13 @@ void Game::perform_attack_sweep() {
         float enemy_angle = atan2(to_e.y, to_e.x);
         float angle_diff = std::abs(atan2(sin(aim_angle + current_relative - enemy_angle),
                                          cos(aim_angle + current_relative - enemy_angle)));
-        if (angle_diff > player.current_max_angle_diff) continue;
+        if (angle_diff > player.current_max_angle_diff) continue;        
 
         e.health -= player.damage;
+
+        if (e.health <= 0 && e.death_timer <= 0.0f) {
+            e.death_timer = 45.0f;
+        }
     }
 }
 
@@ -229,7 +233,7 @@ void Game::update() {
     }
 
     for (auto it = enemies.begin(); it != enemies.end(); ) {
-        if (it->health <= 0.0f) {
+        if ((it->pos - player.pos).magnitude() > DESPAWN_DIST || (it->death_timer >= 0.0f && it->health <= 0.0f)) {
             it = enemies.erase(it);
         } else {
             ++it;
